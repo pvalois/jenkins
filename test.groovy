@@ -1,13 +1,5 @@
 pipeline {
     
-    agent {
-        docker {
-            image 'maven:3.9.3-eclipse-temurin-17'
-            args  '-v /tmp:/tmp'
-            reuseNode true
-        }
-    }
-    
     options {
         // Timeout counter starts AFTER agent is allocated
         timeout(time: 1, unit: 'SECONDS')
@@ -15,11 +7,19 @@ pipeline {
     
     stages {
         stage('Hello') {
-            steps {
-                sh 'hostname'
-                sh 'touch /tmp/bollocks'
-                echo 'Hello World'
-            }
+          agent {
+              docker {
+                  image 'maven:3.9.3-eclipse-temurin-17'
+                  args  '-v /tmp:/tmp'
+                  reuseNode true
+              }
+          }
+
+          steps {
+              sh 'hostname'
+              sh 'touch /tmp/bollocks'
+              echo 'Hello World'
+          }
         }
         
         stage('Build') {
@@ -32,6 +32,7 @@ pipeline {
                     reuseNode true
                 }
             }
+
             steps {
                 sh 'gradle --version'
             }
